@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Planificaciones | Estándar MINED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Slate 100 */
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .input-standard {
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+        }
+        .input-standard:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        /* Estilo para el área de texto del prompt */
+        .prompt-box {
+            background-image: repeating-linear-gradient(#f8fafc 0px, #f8fafc 24px, #e2e8f0 25px);
+            line-height: 25px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800">
+
+    <nav class="header-bg text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i class="fa-solid fa-school text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Planificador Docente</h1>
+                    <p class="text-xs text-blue-200 uppercase tracking-wider">Herramienta de Apoyo Pedagógico</p>
+                </div>
+            </div>
+            <div class="hidden md:block text-sm font-medium text-blue-100">
+                Formato Estándar MINED
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-4 md:p-8">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <div class="bg-white rounded-xl card-shadow p-6 md:p-8">
+                <div class="border-b border-slate-100 pb-4 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pen text-blue-700"></i>
+                    <h2 class="text-lg font-bold text-slate-800">Datos Curriculares</h2>
+                </div>
+
+                <form id="minedForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Nivel Educativo</label>
+                        <select id="grade" class="input-standard w-full rounded-lg px-4 py-3 bg-slate-50 text-slate-700 outline-none cursor-pointer">
+                            <option value="" disabled selected>Seleccione el Nivel...</option>
+                            <optgroup label="Educación Básica (I y II Ciclo)">
+                                <option value="1º Grado">1º Grado</option>
+                                <option value="2º Grado">2º Grado</option>
+                                <option value="3º Grado">3º Grado</option>
+                                <option value="4º Grado">4º Grado</option>
+                                <option value="5º Grado">5º Grado</option>
+                                <option value="6º Grado">6º Grado</option>
+                            </optgroup>
+                            <optgroup label="Tercer Ciclo">
+                                <option value="7º Grado">7º Grado</option>
+                                <option value="8º Grado">8º Grado</option>
+                                <option value="9º Grado">9º Grado</option>
+                            </optgroup>
+                            <optgroup label="Educación Media">
+                                <option value="1º Año Bachillerato">1º Año Bachillerato</option>
+                                <option value="2º Año Bachillerato">2º Año Bachillerato</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Asignatura</label>
+                        <input type="text" id="subject" placeholder="Ej. Lenguaje y Literatura, Matemática..." class="input-standard w-full rounded-lg px-4 py-3 bg-slate-50 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Contenido / Unidad</label>
+                        <input type="text" id="topic" placeholder="Ej. Ecuaciones lineales, La narración..." class="input-standard w-full rounded-lg px-4 py-3 bg-slate-50 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tiempo Estimado</label>
+                        <select id="time" class="input-standard w-full rounded-lg px-4 py-3 bg-slate-50 outline-none">
+                            <option value="1 hora clase (45 min)">1 hora clase (45 min)</option>
+                            <option value="Bloque (90 min)">Bloque (90 min)</option>
+                            <option value="Unidad Semanal">Unidad Semanal</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="button" onclick="generateMinedPrompt()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-lg shadow-lg transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-gear"></i> Generar Planificación Automática
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="resultContainer" class="hidden opacity-0 transition-opacity duration-500">
+                <div class="bg-white rounded-xl card-shadow overflow-hidden h-full flex flex-col">
+                    <div class="bg-slate-100 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-700 text-sm uppercase">
+                            <i class="fa-solid fa-robot mr-1"></i> Prompt Generado
+                        </h3>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-bold border border-green-200">LISTO PARA COPIAR</span>
+                    </div>
+
+                    <div class="p-0 flex-grow relative group">
+                        <textarea id="promptOutput" class="prompt-box w-full h-96 p-6 text-sm text-slate-600 font-mono resize-none focus:outline-none" readonly></textarea>
+                    </div>
+
+                    <div class="p-6 bg-slate-50 border-t border-slate-200">
+                        <button onclick="copyPrompt()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copiar Texto
+                        </button>
+                        <p class="text-center text-xs text-slate-400 mt-3">
+                            Pega este texto en ChatGPT, Gemini o Copilot para obtener tu guion de clase.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-slate-400 text-sm">
+        <p>Herramienta desarrollada para facilitar la labor docente</p>
+    </footer>
+
+    <script>
+        function generateMinedPrompt() {
+            // 1. Obtener datos
+            const grade = document.getElementById('grade').value;
+            const subject = document.getElementById('subject').value;
+            const topic = document.getElementById('topic').value;
+            const time = document.getElementById('time').value;
+
+            // 2. Validar
+            if (!grade || !subject || !topic) {
+                alert("Por favor complete Nivel, Asignatura y Contenido.");
+                return;
+            }
+
+            // 3. Construir el Prompt con Estructura Institucional/MINED
+            const prompt = `Actúa como un Especialista Curricular y Pedagógico experto en normativas educativas actuales (estilo MINED).
+
+Diseña una **CARTA DIDÁCTICA / GUIÓN DE CLASE** innovador, interactivo y riguroso.
+
+📋 **DATOS GENERALES:**
+- **Nivel:** ${grade}
+- **Asignatura:** ${subject}
+- **Contenido:** ${topic}
+- **Tiempo:** ${time}
+
+🎯 **OBJETIVOS DE APRENDIZAJE:**
+Genera automáticamente para este tema:
+1. **Competencia Específica:** Qué habilidad desarrollará el alumno.
+2. **Indicador de Logro:** Un indicador medible y observable.
+
+DESARROLLA LA SECUENCIA DIDÁCTICA CON LAS SIGUIENTES FASES OBLIGATORIAS:
+
+### 1. 🎮 ACTIVACIÓN Y GAMIFICACIÓN (FASE DE ANTICIPACIÓN)
+*Objetivo: Despertar interés y recuperar saberes previos.*
+- **Estrategia Lúdica:** Diseña una dinámica rápida de gamificación (Sistema de puntos, medallas o reto inicial) relacionada con "${topic}".
+- **Diagnóstico:** Crea un cuestionario de 5 preguntas de selección múltiple (con respuestas) para evaluar qué saben del tema.
+
+### 2. 🧠 PRE-SABERES Y RECURSOS
+Lista recursos digitales concretos para introducir el tema:
+- 🎥 1 Video educativo (sugiere título exacto de YouTube).
+- 🕹️ 2 Juegos interactivos online sugeridos.
+- 🖼️ Descripción de 2 imágenes clave para análisis visual.
+
+### 3. 📚 CONSTRUCCIÓN DEL CONOCIMIENTO (DESARROLLO)
+*Objetivo: Procesar la información y modelar.*
+- **Teoría Fundamentada:** Explica el tema con lenguaje adecuado para ${grade}, claro y sin tecnicismos innecesarios.
+- **Aprendizaje Activo:** Propón una actividad donde el alumno "haga" (investigue, resuelva, cree), no solo escuche.
+- **Contextualización:** Un ejemplo de cómo este tema se usa en la vida cotidiana.
+
+### 4. 🚀 CONSOLIDACIÓN Y EVALUACIÓN (CIERRE)
+*Objetivo: Verificar el logro del indicador.*
+- **Actividad de Cierre:** Resumen colaborativo o reto final.
+- **Evaluación Sumativa:** Un test de salida de 5 preguntas nuevas.
+- **Criterios de Evaluación:** Define qué se evaluará (ej: Participación, resolución correcta, trabajo en equipo).
+
+⚠️ **FORMATO DE SALIDA:**
+Usa un formato profesional, estructurado con viñetas, negritas para títulos y un tono formal pero motivador para el docente.`;
+
+            // 4. Insertar y mostrar
+            document.getElementById('promptOutput').value = prompt;
+            
+            const resultDiv = document.getElementById('resultContainer');
+            resultDiv.classList.remove('hidden');
+            setTimeout(() => resultDiv.classList.remove('opacity-0'), 10);
+            
+            // Scroll en móviles
+            if(window.innerWidth < 1024) {
+                resultDiv.scrollIntoView({behavior: "smooth"});
+            }
+        }
+
+        function copyPrompt() {
+            const copyText = document.getElementById("promptOutput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            
+            // Feedback visual simple
+            const btn = document.querySelector("button[onclick='copyPrompt()']");
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Copiado!';
+            btn.classList.replace('bg-slate-800', 'bg-green-600');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.replace('bg-green-600', 'bg-slate-800');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
